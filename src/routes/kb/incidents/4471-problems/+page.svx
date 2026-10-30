@@ -4,7 +4,7 @@ title: '#4471 · what the reports show'
 owner: Justin Heath
 status: open
 reviewed: 2026-10-29
-signature: Justin Heath
+signature: v1.eyJzdWIiOiIxMTM3OSIsImF1ZCI6ImNoYWxsZW5nZTp3aGF0LWl0LXNob3dzIiwiaWF0IjoxNzkzMzM1NjI1LCJleHAiOjE3OTM0MjIwMjV9.CZqDAyKIH2kNWAXmCsBE30e9yvEo3rbUVS0LyF8Io-c
 ---
 
 <script>
