@@ -1,0 +1,84 @@
+---
+layout: runbook
+title: '#4471 · what the reports show'
+owner: Justin Heath
+status: open
+reviewed: 2026-10-29
+signature: Justin Heath
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import ProblemCount from '#lib/kb/ProblemCount.svelte';
+  import ReportList from '#lib/kb/ReportList.svelte';
+  import SubjectSplit from '#lib/kb/SubjectSplit.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+
+  const tickets = {
+    parser: 'https://github.com/sirmaelstrom/mega-s01e03-what-it-shows/issues/1',
+    hint: 'https://github.com/sirmaelstrom/mega-s01e03-what-it-shows/issues/2',
+    'one-day': 'https://github.com/sirmaelstrom/mega-s01e03-what-it-shows/issues/3',
+  };
+</script>
+
+[#4471](/kb/incidents/4471) is marked known: one issue, one fix queued. Its reports describe more than
+one problem, and the queued parser fix reaches only the first. Each problem now has its own ticket.
+
+<ProblemTable ticket={4471} {tickets} />
+
+<Callout kind="warn">
+Shipping the parser fix does not close #4471's reports. The <code>hint</code> and <code>one-day</code>
+reports keep coming until their own fixes ship.
+</Callout>
+
+## How each report was placed
+
+1. One id, one report. The export repeats <ProblemCount ticket={4471} of="repeated" /> rows where its
+   pages overlap; each counts once.
+2. A report the desk read as a one-day move (`desk-notes.json`) is filed as `one-day`. None of them
+   shows a day and month swapped, so the parser is not what moved them.
+3. Every other report is placed by its tenant (`causes.ts`): a day-first tenant's report through
+   booking-v3's form is `hint`; any other way in is `parser`.
+4. The intake tag is not used. It is a guess from the reporter's browser, and it names a different
+   cause than the tenant does in <ProblemCount ticket={4471} of="tag-disagrees" /> reports.
+
+## parser: day-first dates read month first
+
+Reports: <ProblemCount ticket={4471} of="parser" />. The shared parser reads every date month first, so a
+day-first tenant's 7 April becomes 4 July. Every report here that gives two dates shows the same day and
+month swapped. The ones with no dates come from the same tenants and ways in, and one asks for a
+"my country writes the day first" setting. This is the problem the queued fix is for.
+
+## hint: booking-v3 asks day-first tenants for month first
+
+Reports: <ProblemCount ticket={4471} of="hint" />, all through booking-v3's form at day-first tenants.
+The form prints `MM/DD/YYYY` under its date field, people type the month first as told, and the form reads
+the date the tenant's way. The dates come out swapped like the parser's, but the parser fix does not touch
+the form. #4471's own table marks these "not this ticket — no ticket of its own". The fix is a hint in the
+tenant's order.
+
+## one-day: dates move by one day
+
+Reports: <ProblemCount ticket={4471} of="one-day" />. Nothing is swapped here; the day moves by one.
+
+<ReportList ticket={4471} problem="one-day" />
+
+A client in Toronto and a client in Lisbon got different days for the same meeting, and an invite arrived
+before its booking existed: the day depends on the time zone it is shown in. The parser fix does not touch
+this either. #4471's table files these under `parser` and leaves a footnote.
+
+## Subject lines do not tell them apart
+
+<SubjectSplit ticket={4471} />
+
+Decision [0001](/kb/decisions/0001-dedupe-by-subject) merges on subject alone. Most subjects arrive
+for more than one problem, so no subject rule could have kept them apart. 0001 is accepted and stays as
+written; a new decision record replaces it.
+
+## On the desk
+
+- File a date report by its tenant, its way in and its body, not by its subject or intake tag.
+- Before closing a problem's ticket, check that its count on this page has stopped growing.
+
+<RenderStamp {signature} />
