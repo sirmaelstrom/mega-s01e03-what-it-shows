@@ -12,7 +12,7 @@ const TEXT = {
   parser: {
     title: 'Day-first dates are read month first by the shared parser',
     what: "The shared parser reads every date month first. Every tenant in #4471 writes the day first, so 7 April comes out as 4 July. This is the bug #4471's queued fix is for.",
-    evidence: 'Every report here that gives two dates shows the same day and month swapped. The rest give no dates but come from the same tenants and ways in, and one asks for a "my country writes the day first" setting.',
+    evidence: 'Apart from the one-day moves, every report here that gives two dates shows the same day and month swapped, and one with no dates asks for a "my country writes the day first" setting. The count includes the 5 reports the desk read as a one-day move: the desk files them here by tenant and counts them here; they also have their own ticket (#3).',
     fix: "Parse dates in the tenant's order (its locale), not month first.",
   },
   hint: {
@@ -24,7 +24,7 @@ const TEXT = {
   'one-day': {
     title: 'Dates move by one day (time zone), not a day/month swap',
     what: 'Booked dates move by one day, depending on the time zone they are shown in. No day and month are swapped, so the parser fix does not touch this.',
-    evidence: 'These are the reports the desk itself read as a one-day move (desk-notes.json). Their bodies: one shows 12 May as 11 May, one a Tuesday shown as Monday; a client in Toronto and one in Lisbon got different days for the same meeting; an invite arrived before its booking; June bookings one day off. #4471\'s kb table files them under parser with a footnote.',
+    evidence: 'These are the reports the desk itself read as a one-day move (desk-notes.json). Their bodies: one shows 12 May as 11 May, one a Tuesday shown as Monday; a client in Toronto and one in Lisbon got different days for the same meeting; an invite arrived before its booking; June bookings one day off. #4471\'s kb table files them under parser with a footnote, and they stay counted there too (#1).',
     fix: 'Store and send booked dates as calendar dates (or with the tenant\'s time zone), and render them in that zone, not the viewer\'s or UTC.',
   },
 };
@@ -60,7 +60,7 @@ try {
       x.fix,
       '',
       `## How the ${n} was counted`,
-      `Over \`src/lib/data/reports-4471.json\` (${t.rows} rows merged into #4471): one id, one report (${t.rows - t.merged.length} rows repeat where the export's pages overlap), leaving ${t.merged.length}. A report the desk read as a one-day move (\`desk-notes.json\`) is \`one-day\`; every other report is placed by its tenant (\`causes.ts\`: a day-first tenant's report through booking-v3's form is \`hint\`, any other way in is \`parser\`). Reproduce with \`npm install && npm run counts\`; the kb page [${'.svx'}](${page}) / [rendered](${rendered}) computes the same numbers at render time.`,
+      `Over \`src/lib/data/reports-4471.json\` (${t.rows} rows merged into #4471): one id, one report (${t.rows - t.merged.length} rows repeat where the export's pages overlap), leaving ${t.merged.length}. Every report is filed by its tenant, as the desk counts (\`causes.ts\`: a day-first tenant's report through booking-v3's form is \`hint\`, any other way in is \`parser\`). The reports the desk read as a one-day move (\`desk-notes.json\`) are \`one-day\`, and stay counted where they're filed. Reproduce with \`npm install && npm run counts\`; the kb page [${'.svx'}](${page}) / [rendered](${rendered}) computes the same numbers at render time.`,
       '',
       `<details><summary>The ${n} report ids</summary>`,
       '',

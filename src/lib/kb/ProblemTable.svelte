@@ -40,8 +40,16 @@
   </tbody>
 </table>
 
+{#each t.groups.filter((g) => g.filedAs) as g (g.problem)}
+  <p class="note">
+    The {g.reports.length} <code>{g.problem}</code> reports are also counted where the desk files them by tenant:
+    {list(g.filedAs ?? {})}.
+  </p>
+{/each}
+
 <style>
   .sum { font-size: 1.1rem; }
   .small { color: var(--muted); font-size: 0.85em; }
+  .note { color: var(--muted); font-size: 0.85em; }
   .unplaced td { background: var(--warn-bg); }
 </style>

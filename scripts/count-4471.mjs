@@ -28,9 +28,10 @@ try {
     return Math.abs(days) === 1 ? 'one day apart' : `${days} days apart`;
   };
 
-  let total = 0;
+  const filed = new Set();
   for (const g of groups) {
-    total += g.reports.length;
+    if (!g.filedAs) for (const r of g.reports) filed.add(r.id);
+    if (g.filedAs) console.log(`\n(${g.problem} reports stay counted where they're filed: ${JSON.stringify(g.filedAs)})`);
     const says = g.reports.reduce((t, r) => ((t[bodySays(r.body)] = (t[bodySays(r.body)] ?? 0) + 1), t), {});
     console.log(`\n${g.problem}: ${g.reports.length} reports · ${g.tenants.length} tenants · seen ${g.firstSeen} → ${g.lastSeen}`);
     console.log(`  tenants  ${g.tenants.join(', ')}`);
@@ -40,7 +41,7 @@ try {
     console.log(`  bodies   ${JSON.stringify(says)}`);
     for (const r of g.reports.filter((r) => bodySays(r.body) !== 'day/month swapped')) console.log(`    ${r.id} ${r.tenant} ${r.channel}: ${r.body}`);
   }
-  console.log(`\nproblems: ${groups.length}; reports placed: ${total} of ${merged.length}`);
+  console.log(`\nproblems: ${groups.length}; reports filed by tenant: ${filed.size} of ${merged.length}`);
 } finally {
   await vite.close();
 }
